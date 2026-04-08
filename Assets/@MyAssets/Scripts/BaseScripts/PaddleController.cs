@@ -1,38 +1,51 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PaddleController : MonoBehaviour
 {
     [SerializeField]private Rigidbody2D rb;
 
-    [SerializeField] private bool goLeft;
-    [SerializeField] private bool goRight;
 
+    [SerializeField] float paddleSpeed;
+   
+
+    [SerializeField] private InputActionReference moveAction;
+    [SerializeField] private InputActionReference launchBall;
+    private Vector2 moveInput;
+    private bool wantToLaunchBall;
 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void OnEnable()
     {
-        goLeft = false;
-        goRight = false;
+        moveAction.action.Enable();
     }
-
+    private void OnDisable()
+    {
+        moveAction.action.Disable();
+    }
     // Update is called once per frame
     void Update()
     {
-        if (goLeft)
-        {
-            rb.linearVelocityX = -3f;
-        }
-        else if (goRight)
-        {
-            rb.linearVelocityX = 3f;
-        }
-        else {
-            rb.linearVelocityX = 0f;
-        }
+       UpdateInput();
+    }
+
+
+    public void UpdateInput() { 
+
+        moveInput = moveAction.action.ReadValue<Vector2>();
+        wantToLaunchBall = launchBall.action.ReadValue<bool>();
+        rb.linearVelocityX = moveInput.x * paddleSpeed;
+    
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        
     }
 }
